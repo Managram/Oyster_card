@@ -1,4 +1,5 @@
 require_relative 'journey_log'
+require_relative 'journey'
 
 class Oystercard
   attr_reader :balance, :entry, :exit, :journey_logs, :journey_log
@@ -29,7 +30,11 @@ class Oystercard
   def touch_out(station)
     @journey_log.end(station)
     charge_penalty if @journey_log.previous_journey_incomplete?
-    @balance -= MIN_FARE if !@journey_log.previous_journey_incomplete?
+    charge_fare if !@journey_log.previous_journey_incomplete?
+  end
+
+  def charge_fare
+    @balance -= journey_log.journeys.last.fare
   end
 
   private
